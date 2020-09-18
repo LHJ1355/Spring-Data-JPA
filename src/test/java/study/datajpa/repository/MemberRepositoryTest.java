@@ -4,8 +4,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.domain.Member;
+import study.datajpa.domain.Team;
+import study.datajpa.dto.MemberDto;
 
 import java.util.List;
 
@@ -14,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@Rollback(false)
 class MemberRepositoryTest {
     @Autowired private MemberRepository memberRepository;
+    @Autowired private TeamRepository teamRepository;
 
     @Test
     void findByUsername() {
@@ -62,5 +67,26 @@ class MemberRepositoryTest {
 
         //then
         assertThat(findMember).isEqualTo(memberB);
+    }
+
+    @Test
+    void findMemberDto(){
+
+        //given
+        Team team = new Team("teamA");
+        teamRepository.save(team);
+
+        Member memberA = Member.createMember("memberA", 10, team);
+        Member memberB = Member.createMember("memberB", 20, team);
+
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+        //when
+        List<MemberDto> memberDtos = memberRepository.findMemberDto();
+
+        //then
+        memberDtos.stream().forEach(m -> {
+            System.out.println("memberDto -> " + m);
+        });
     }
 }

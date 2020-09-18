@@ -29,7 +29,6 @@ public class Member {
         Member member = new Member(username, age);
         if(team == null) throw new IllegalStateException("team is null");
         member.changeTeam(team);
-
         return member;
     }
 
