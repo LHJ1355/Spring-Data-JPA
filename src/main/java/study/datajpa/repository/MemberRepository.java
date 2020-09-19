@@ -3,14 +3,13 @@ package study.datajpa.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.domain.Member;
 import study.datajpa.dto.MemberDto;
 
+import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,4 +82,17 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @EntityGraph(attributePaths = {"team"})        //@Query도 EntityGraph 사용 가능
     @Query("select m from Member m")
     List<Member> findMembers();
+
+    /**
+     * QueryHint, Lock
+     */
+    //QueryHint는 jpa 구현체에게 제공되는 힌트, 여기서는 구현체인 하이버네이트의 readOnly 값을 true로 넘겨 최적화 실행
+    //하이버네이트 readOnly 는 스냅샷을 저장하지 않아 메모리를 적게 쓰고, 스냅샷이 없으므로 더티체킹 과정을 생략
+    //transactional readOnly 는 flush 를 생략해 더티체킹 과정을 생략
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+    Member findReadOnlyByUsername(String username);
+
+    //DB의 select for update 처럼 select한 필드들로의 접근을 제한하는 기능을 jpa 에서 쉽게 제공해주는 annotation
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Member findLockByUsername();
 }
