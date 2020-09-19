@@ -181,4 +181,21 @@ class MemberRepositoryTest {
         //then
         assertThat(cnt).isEqualTo(3);
     }
+
+    @Test
+    void EntityGraph(){
+        Team team = new Team("team");
+        teamRepository.save(team);
+
+        memberRepository.save(Member.createMember("memberA", 10, team));
+        memberRepository.save(Member.createMember("memberA", 20, team));
+
+        em.flush();
+        em.clear();
+
+        List<Member> members = memberRepository.findEntityGraphByUsername("memberA");
+        members.stream().forEach(m -> System.out.println(m.getTeam().getName()));
+
+        memberRepository.findMembers();
+    }
 }
