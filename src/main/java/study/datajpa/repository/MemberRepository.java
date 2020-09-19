@@ -13,7 +13,7 @@ import javax.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
     /**
      * 메소드 이름으로 쿼리 생성,  파라미터 바인딩은 위치기반
      */
@@ -94,5 +94,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     //DB의 select for update 처럼 select한 필드들로의 접근을 제한하는 기능을 jpa 에서 쉽게 제공해주는 annotation
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Member findLockByUsername();
+    Member findLockByUsername(String username);
 }
