@@ -203,4 +203,17 @@ class MemberRepositoryTest {
     void callCustom(){
         List<Member> members = memberRepository.findMemberCustom();
     }
+
+    @Test
+    void JpaEventBaseEntity() throws Exception {
+        //given
+        Team team = new Team("teamA");
+        teamRepository.save(team);
+        Member member = Member.createMember("memberA", 10, team);
+        memberRepository.save(member);  //@PrePersist
+
+        //when
+        Thread.sleep(1000);
+        member.changeName("memberB");
+    }
 }
